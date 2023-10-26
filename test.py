@@ -31,7 +31,7 @@ fig = plt.figure()
 
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(pca_manual[0 ,0], pca_manual[0,1], pca_manual[0,2], c='r', marker='o', label='Class 1')
+ax.scatter(pca_manual[df['target'] == 1,0], pca_manual[df['target'] == 1,1], pca_manual[df['target'] == 1,2], c='r', marker='o', label='Class 1')
 ax.scatter(pca_manual[df['target'] == 0,0], pca_manual[df['target'] == 0,1], pca_manual[df['target'] == 0,2], c='b', marker='^', label='Class 2')
 
 
