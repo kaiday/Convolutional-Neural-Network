@@ -35,7 +35,7 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 # Read the JPG image using PIL
-image = Image.open('C:/Users/super/OneDrive/Máy tính/FPTU AI/Kì 3/Mai391/nghich pca/test_img.jpg')
+image = Image.open('test_img.jpg')
 
 # Convert the image to a NumPy array
 image_array = np.array(image)
