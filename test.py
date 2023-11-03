@@ -1,28 +1,85 @@
-import matplotlib.pyplot as plt
+# import the necessary libraries
 import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from itertools import product
 
-# Define the vectors
-v1 = np.array([1, 1, 1])
-v2 = np.array([-1, 2, 0])
+# set the param 
+plt.rc('figure', autolayout=True)
+plt.rc('image', cmap='magma')
 
-# Create a 3D plot
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+# define the kernel
+kernel = tf.constant([[-1, -1, -1],
+					  [-1, 8, -1],
+					  [-1, -1, -1],
+				     ])
 
-# Plot the vectors
-origin = np.array([0, 0, 0])
-ax.quiver(*origin, *v1, color='red')
-ax.quiver(*origin, *v2, color='blue')
+# load the image
+image = tf.io.read_file('Ganesh.jpg')
+image = tf.io.decode_jpeg(image, channels=1)
+image = tf.image.resize(image, size=[300, 300])
 
-# Set labels for the axes
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
+# plot the image
+img = tf.squeeze(image).numpy()
+plt.figure(figsize=(5, 5))
+plt.imshow(img, cmap='gray')
+plt.axis('off')
+plt.title('Original Gray Scale image')
+plt.show();
 
-# Set the plot limits
-ax.set_xlim([-2, 2])
-ax.set_ylim([-2, 2])
-ax.set_zlim([-2, 2])
 
-# Show the plot
+# Reformat
+image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+image = tf.expand_dims(image, axis=0)
+kernel = tf.reshape(kernel, [*kernel.shape, 1, 1])
+kernel = tf.cast(kernel, dtype=tf.float32)
+
+# convolution layer
+conv_fn = tf.nn.conv2d
+
+image_filter = conv_fn(
+	input=image,
+	filters=kernel,
+	strides=1, # or (1, 1)
+	padding='SAME',
+)
+
+plt.figure(figsize=(15, 5))
+
+# Plot the convolved image
+plt.subplot(1, 3, 1)
+
+plt.imshow(
+	tf.squeeze(image_filter)
+)
+plt.axis('off')
+plt.title('Convolution')
+
+# activation layer
+relu_fn = tf.nn.relu
+# Image detection
+image_detect = relu_fn(image_filter)
+
+plt.subplot(1, 3, 2)
+plt.imshow(
+	# Reformat for plotting
+	tf.squeeze(image_detect)
+)
+
+plt.axis('off')
+plt.title('Activation')
+
+# Pooling layer
+pool = tf.nn.pool
+image_condense = pool(input=image_detect, 
+							window_shape=(2, 2),
+							pooling_type='MAX',
+							strides=(2, 2),
+							padding='SAME',
+							)
+
+plt.subplot(1, 3, 3)
+plt.imshow(tf.squeeze(image_condense))
+plt.axis('off')
+plt.title('Pooling')
 plt.show()
