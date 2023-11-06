@@ -1,6 +1,6 @@
 import numpy as np
 from keras.datasets import mnist
-from keras.utils import np_utils
+from keras.utils import to_categorical
 
 from dense import Dense
 from convolutional import Convolutional
@@ -8,6 +8,7 @@ from reshape import Reshape
 from activations import Sigmoid
 from losses import binary_cross_entropy, binary_cross_entropy_prime
 from network import train, predict
+
 
 def preprocess_data(x, y, limit):
     zero_index = np.where(y == 0)[0][:limit]
@@ -17,9 +18,10 @@ def preprocess_data(x, y, limit):
     x, y = x[all_indices], y[all_indices]
     x = x.reshape(len(x), 1, 28, 28)
     x = x.astype("float32") / 255
-    y = np_utils.to_categorical(y)
+    y = to_categorical(y)
     y = y.reshape(len(y), 2, 1)
     return x, y
+
 
 # load MNIST from server, limit to 100 images per class since we're not training on GPU
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
